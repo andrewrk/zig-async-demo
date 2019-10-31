@@ -77,7 +77,7 @@ enabled. You can see most of the time is spent waiting for LLVM:
 <details>
 <summary>Go strace</summary>
 <br>
-```
+<pre>
 execve("./sieve-go", ["./sieve-go"], 0x7ffcef70f258 /* 62 vars */) = 0
 arch_prctl(ARCH_SET_FS, 0x556cf0)       = 0
 sched_getaffinity(0, 128, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) = 48
@@ -190,14 +190,14 @@ strace: Process 23800 attached
 [pid 23800] <... select resumed> <unfinished ...>) = ?
 [pid 23800] +++ exited with 0 +++
 +++ exited with 0 +++
-```
+</pre>
 </details>
 
 
 <details>
 <summary>Go strace</summary>
 <br>
-```
+<pre>
 execve("./sieve-zig", ["./sieve-zig"], 0x7fffaedd9578 /* 62 vars */) = 0
 rt_sigaction(SIGSEGV, {sa_handler=0x25af80, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART|SA_RESETHAND|SA_SIGINFO, sa_restorer=0x2065b0}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
 sched_getaffinity(0, 128, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) = 48
@@ -1871,7 +1871,7 @@ munmap(0x7f94e1749000, 480)             = 0
 munmap(0x7f94e1748000, 120)             = 0
 exit_group(0)                           = ?
 +++ exited with 0 +++
-```
+</pre>
 </details>
 
 In the Go strace, the `sigaction` stuff appears to all be setup. It creates
