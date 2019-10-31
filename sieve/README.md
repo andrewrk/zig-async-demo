@@ -195,7 +195,7 @@ strace: Process 23800 attached
 
 
 <details>
-<summary>Go strace</summary>
+<summary>Zig strace</summary>
 <br>
 <pre>
 execve("./sieve-zig", ["./sieve-zig"], 0x7fffaedd9578 /* 62 vars */) = 0
