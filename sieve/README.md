@@ -1894,9 +1894,9 @@ To measure performance, I increased the main iteration count to a larger
 number and piped stdout to a file, measuring total application runtime.
 
 Note that we still use
-[ReleaseSafe](https://ziglang.org/documentation/master/#ReleaseSafe).
+[ReleaseSafe](https://ziglang.org/documentation/master/#ReleaseSafe)
 rather than
-[ReleaseFast](https://ziglang.org/documentation/master/#ReleaseFast).
+[ReleaseFast](https://ziglang.org/documentation/master/#ReleaseFast)
 for the Zig build, for a good faith comparison.
 
 ```diff
