@@ -1,7 +1,7 @@
 # Sieve of Eratosthenes
 
- * sieve.go - from https://golang.org/doc/play/sieve.go
- * sieve.zig - direct port to zig. 
+ * sieve.go - [provided by shivammamgain](https://twitter.com/shivammamgain/status/1189766900500201473)
+ * sieve.zig - my direct port to zig. 
 
 Note: this would not be the recommended way to implement a
 concurrent prime sieve in Zig; this implementation is intended
