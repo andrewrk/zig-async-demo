@@ -61,7 +61,7 @@ func reduceMul(in <-chan *big.Int, out chan<- *big.Int) {
 }
 
 func previousPowerOfTwo(x int64) int64 {
-	for i := 1; i < 64; i *= 2 {
+	for i := uint(1); i < 64; i *= 2 {
 		x = x | (x >> i)
 	}
 	return x - (x >> 1)

@@ -1,16 +1,15 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const BigInt = std.math.big.Int;
+const Allocator = std.mem.Allocator;
 
 pub fn main() !void {
-    try fact(3000000);
+    try fact(std.heap.c_allocator, 3000000);
 }
 
-fn fact(n: u64) !void {
-    const allocator = std.heap.direct_allocator;
+fn fact(allocator: *Allocator, n: u64) !void {
     var x = try BigInt.init(allocator);
     defer x.deinit();
-    try bigIntMultRange(allocator, &x, 1, n);
+    return bigIntMultRange(allocator, &x, 1, n);
 }
 
 fn bigIntMultRange(allocator: *Allocator, out: *BigInt, a: u64, b: u64) anyerror!void {
@@ -20,8 +19,8 @@ fn bigIntMultRange(allocator: *Allocator, out: *BigInt, a: u64, b: u64) anyerror
     }
 
     var l = try BigInt.init(allocator);
-    var r = try BigInt.init(allocator);
     defer l.deinit();
+    var r = try BigInt.init(allocator);
     defer r.deinit();
 
     const m = @divFloor((a + b), 2);

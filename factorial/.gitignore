@@ -1,8 +1,10 @@
-fact-go
-fact-zig
-fact-gmp-zig
 fact-linear-go
 fact-linear-zig
 fact-linear-gmp-zig
+fact-channel-go
+fact-channel-zig
+fact-channel-gmp-zig
+fact-await-zig
+fact-await-gmp-zig
 zig-cache
 *.o

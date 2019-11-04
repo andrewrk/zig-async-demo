@@ -10,12 +10,12 @@ to serve as a direct port of the reference Go code.
 In this README I have experimented with the x86_64-linux-gnu target.
 This laptop has a Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz.
 
-# Versions
+## Versions
 
  * go version go1.4-bootstrap-20161024 linux/amd64
  * zig 0.5.0+d3d3e4e3
 
-# Output
+## Output
 
 Both programs output the same:
 
@@ -32,7 +32,7 @@ Both programs output the same:
 29
 ```
 
-# Binary Size
+## Binary Size
 
 Go does not have a configurable build mode, so, which Zig build mode should
 we choose that is closest to Go's? This would be
@@ -46,7 +46,7 @@ zig build-exe sieve.zig --release-safe
  * sieve (Go) - 1.9 MiB
  * sieve (Zig) - 976 KiB
 
-# Compilation Speed
+## Compilation Speed
 
 In this case it makes more sense to measure Zig's debug build mode:
 
@@ -72,7 +72,7 @@ enabled. You can see most of the time is spent waiting for LLVM:
                Total      0.0000      1.2355      1.2355      1.0000
 ```
 
-# strace
+## strace
 
 <details>
 <summary>Go strace</summary>
@@ -1888,7 +1888,7 @@ a tiny amount of work before telling the kernel to dispatch jobs to workers.
 This leads to a lot of contention on a synchronization mutex in the
 event loop implementation, as we'll see in the next section.
 
-# Performance
+## Performance
 
 To measure performance, I increased the main iteration count to a larger
 number and piped stdout to a file, measuring total application runtime.
@@ -1959,7 +1959,7 @@ Using perf, I was able to find a clue:
 Most of the time is spent on resource contention in the event loop. This is a
 nice clue on how to improve it.
 
-# Idiomatic Zig Implementation
+## Idiomatic Zig Implementation
 
 With full awareness that the Go code is provided to demonstrate channels and
 goroutines, I still think it is worth pointing out what a more idiomatic

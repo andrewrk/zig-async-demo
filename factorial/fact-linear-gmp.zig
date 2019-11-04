@@ -9,8 +9,9 @@ pub fn main() void {
 fn fact(n: u64) void {
     var x: c.mpz_t = undefined;
     c.mpz_init(&x);
+    defer c.mpz_clear(&x);
+
     bigIntMultRange(&x, 1, n);
-    c.mpz_clear(&x);
 }
 
 fn bigIntMultRange(out: *c.mpz_t, a: u64, b: u64) void {
@@ -21,15 +22,15 @@ fn bigIntMultRange(out: *c.mpz_t, a: u64, b: u64) void {
 
     var l: c.mpz_t = undefined;
     c.mpz_init(&l);
+    defer c.mpz_clear(&l);
+
     var r: c.mpz_t = undefined;
     c.mpz_init(&r);
+    defer c.mpz_clear(&r);
 
     const m = @divFloor((a + b), 2);
     bigIntMultRange(&l, a, m);
     bigIntMultRange(&r, m + 1, b);
 
     c.mpz_mul(out, &l, &r);
-
-    c.mpz_clear(&l);
-    c.mpz_clear(&r);
 }
