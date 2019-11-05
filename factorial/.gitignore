@@ -1,8 +1,14 @@
+fact-linear
 fact-linear-go
 fact-linear-zig
+fact-linear-gmp
+fact-linear-gmp-go
 fact-linear-gmp-zig
+fact-channel
 fact-channel-go
 fact-channel-zig
+fact-channel-gmp
+fact-channel-gmp-go
 fact-channel-gmp-zig
 fact-await-zig
 fact-await-gmp-zig

@@ -17,10 +17,12 @@ This laptop has a Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz.
  * fact-linear.zig - ported to zig, using `std.math.big.Int`. Not quite
    pure zig because it uses libc memory allocator. Zig std lib has no
    general purpose memory allocator yet.
+ * fact-linear-gmp.go - using gmp instead of `math/big`.
  * fact-linear-gmp.zig - using gmp instead of `std.math.big.Int`.
  * fact-channel.go - parallel version using goroutines & channels
  * fact-channel.zig - ported directly to zig, using `std.math.big.Int`.
    Again, not quite pure zig because it uses libc memory allocator.
+ * fact-channel-gmp.go - using gmp instead of `math/big`.
  * fact-channel-gmp.zig - using gmp instead of `std.math.big.Int`.
  * fact-await.zig - written in idiomatic zig using async/await. Note how it
    looks a lot closer to fact-linear.zig than fact-channel.zig.
@@ -28,8 +30,8 @@ This laptop has a Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz.
 
 ## Software Versions
 
- * go version go1.4-bootstrap-20161024 linux/amd64
- * zig 0.5.0+ce70a9be
+ * go version go1.13.3 linux/amd64
+ * zig 0.5.0+9bc4f8ea
 
 ## Output
 
@@ -55,20 +57,24 @@ fair build mode to choose.
 
 ```
 go build fact-linear.go
-zig build-exe fact-linear.zig --release-fast
-zig build-exe fact-linear-gmp.zig --release-fast -lc -lgmp
+go build fact-linear-gmp.go
 go build fact-channel.go
+go build fact-channel-gmp.go
+zig build-exe fact-linear.zig --release-fast -lc
+zig build-exe fact-linear-gmp.zig --release-fast -lc -lgmp
 zig build-exe fact-channel.zig --release-fast -lc
 zig build-exe fact-channel-gmp.zig --release-fast -lc -lgmp
 zig build-exe fact-await.zig --release-fast -lc
 zig build-exe fact-await-gmp.zig --release-fast -lc -lgmp
 ```
 
- * fact-linear (Go) - 2.3 MiB (statically linked)
+ * fact-linear (Go) - 1.9 MiB (statically linked)
  * fact-linear (Zig) - 388 KiB (dynamically linked)
+ * fact-linear-gmp (Go) - 1.9 MiB (dynamically linked)
  * fact-linear-gmp (Zig) - 41 KiB (dynamically linked)
- * fact-channel (Go) - 2.3 MiB (statically linked)
+ * fact-channel (Go) - 1.9 MiB (statically linked)
  * fact-channel (Zig) - 574 KiB (dynamically linked)
+ * fact-channel-gmp (Go) - 1.9 MiB (dynamically linked)
  * fact-channel-gmp (Zig) - 229 KiB (dynamically linked)
  * fact-await (Zig) - 500 KiB (dynamically linked)
  * fact-await-gmp (Zig) - 143 KiB (dynamically linked)
@@ -81,14 +87,16 @@ In this case it makes more sense to measure Zig's debug build mode:
 zig build-exe fact-linear.zig
 ```
 
- * fact-linear.go - 0.11 seconds
- * fact-linear.zig - 0.51 seconds
- * fact-linear-gmp.zig - 0.62 seconds
- * fact-channel.go - 0.10 seconds
+ * fact-linear.go - 0.17 seconds
+ * fact-linear.zig - 0.66 seconds
+ * fact-linear-gmp.go - 0.28 seconds
+ * fact-linear-gmp.zig - 0.61 seconds
+ * fact-channel.go - 0.16 seconds
  * fact-channel.zig - 1.0 seconds
- * fact-channel-gmp.zig - 1.0 seconds
+ * fact-channel-gmp.go - 0.29 seconds
+ * fact-channel-gmp.zig - 1.1 seconds
  * fact-await.zig - 1.0 seconds
- * fact-await-gmp.zig - 0.98 seconds
+ * fact-await-gmp.zig - 1.0 seconds
 
 
 Go is certainly going to win on this comparison until Zig has a
@@ -109,14 +117,16 @@ enabled. You can see most of the time is spent waiting for LLVM:
 
 ## Performance
 
- * fact-linear.go - 19.86 seconds
- * fact-linear.zig - 46.43 seconds
- * fact-linear-gmp.zig - 1.26 seconds
- * fact-channel.go - 20.2 seconds
- * fact-channel.zig - 23.6 seconds
+ * fact-linear.go - 12.47 seconds
+ * fact-linear.zig - 49.44 seconds
+ * fact-linear-gmp.go - 0.462 seconds
+ * fact-linear-gmp.zig - 1.42 seconds
+ * fact-channel.go - 6.84 seconds
+ * fact-channel.zig - 18.39 seconds
+ * fact-channel-gmp.go - 8.17 seconds
  * fact-channel-gmp.zig - 0.4 seconds
- * fact-await.zig - 36.5 seconds
- * fact-await-gmp.zig - 2.0 seconds
+ * fact-await.zig - 37.5 seconds
+ * fact-await-gmp.zig - 2.2 seconds
 
 The most important thing to note here is that the fastest performance was a
 single-threaded implementation that linked gmp, which has high performance
@@ -159,8 +169,8 @@ actually *become the linear version*. Watch this:
 
 With this modification:
 
- * fact-await.zig - 47.9 seconds
- * fact-await-gmp.zig - 1.40 seconds
+ * fact-await.zig - 45.7 seconds
+ * fact-await-gmp.zig - 1.47 seconds
 
 These programs end up generating near-identical code to fact-linear.zig and fact-linear-gmp.zig,
 end up using only a single-thread of execution, and have roughly the same performance!
