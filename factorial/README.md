@@ -24,9 +24,9 @@ This laptop has a Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz.
    Again, not quite pure zig because it uses libc memory allocator.
  * fact-channel-gmp.go - using gmp instead of `math/big`.
  * fact-channel-gmp.zig - using gmp instead of `std.math.big.Int`.
- * fact-await.zig - written in idiomatic zig using async/await. Note how it
-   looks a lot closer to fact-linear.zig than fact-channel.zig.
- * fact-await-gmp.zig - using gmp instead of `std.math.big.Int`.
+ * **fact-await.zig - written in idiomatic zig using async/await. Note how it
+   looks a lot closer to fact-linear.zig than fact-channel.zig.**
+ * **fact-await-gmp.zig - using gmp instead of `std.math.big.Int`.**
 
 ## Software Versions
 
@@ -173,7 +173,7 @@ With this modification:
  * fact-await-gmp.zig - 1.47 seconds
 
 These programs end up generating near-identical code to fact-linear.zig and fact-linear-gmp.zig,
-end up using only a single-thread of execution, and have roughly the same performance!
+end up using only a single-thread of execution, and have the same performance!
 
 This means you can write code in Zig that expresses parallelism, which works in both evented I/O
 and blocking programs.
