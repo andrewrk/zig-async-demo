@@ -34,12 +34,12 @@ pub fn main() anyerror!void {
     // An arena allocator lets us free all the memory at once.
     // In this case we let the operating system do the freeing, since
     // that is most efficient.
-    var arena = std.heap.ArenaAllocator.init(std.heap.direct_allocator);
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     const allocator = &arena.allocator;
 
     // Create a new channel.
     var ch = try allocator.create(Channel(u32));
-    ch.init([0]u32{}); // Unbuffered channel.
+    ch.init(&[0]u32{}); // Unbuffered channel.
 
     // Start the generate async function.
     // In this case we let it run forever, not bothering to `await`.
@@ -48,9 +48,9 @@ pub fn main() anyerror!void {
     var i: usize = 0;
     while (i < 10) : (i += 1) {
         const prime = ch.get();
-        std.debug.warn("{}\n", prime);
+        std.debug.warn("{}\n", .{ prime });
         const ch1 = try allocator.create(Channel(u32));
-        ch1.init([0]u32{});
+        ch1.init(&[0]u32{});
         (try allocator.create(@Frame(filter))).* = async filter(ch, ch1, prime);
         ch = ch1;
     }

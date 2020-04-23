@@ -20,16 +20,16 @@ fn fillSieve(primes_buffer: []u32, start_index: usize) void {
 }
 
 pub fn main() anyerror!void {
-    const stdout_file = try std.io.getStdOut();
-    const stdout_unbuffered = &stdout_file.outStream().stream;
-    var buffered_stream = std.io.BufferedOutStream(std.fs.File.WriteError).init(stdout_unbuffered);
-    const stdout = &buffered_stream.stream;
+    const stdout_file = std.io.getStdOut();
+    const stdout_unbuffered = stdout_file.outStream();
+    var buffered_stream = std.io.bufferedOutStream(stdout_unbuffered);
+    const stdout = buffered_stream.outStream();
 
     var primes_buffer: [1000]u32 = undefined;
     fillSieve(&primes_buffer, 0);
 
     for (primes_buffer) |prime| {
-        try stdout.print("{}\n", prime);
+        try stdout.print("{}\n", .{ prime });
     }
 
     try buffered_stream.flush();
