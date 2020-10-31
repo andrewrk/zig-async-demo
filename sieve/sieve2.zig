@@ -11,7 +11,7 @@ fn fillSieve(primes_buffer: []u32, start_index: usize) void {
         var n = primes_buffer[fill_i - 1];
         const next_prime = while (true) {
             n += 2;
-            for (primes_buffer[0..fill_i]) |prev_prime| {
+            for (primes_buffer[0..std.math.sqrt(fill_i) + 1]) |prev_prime| {
                 if (n % prev_prime == 0) break;
             } else break n;
         } else unreachable;
