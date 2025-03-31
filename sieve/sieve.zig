@@ -4,54 +4,60 @@
 // to serve as a direct port of the reference Go code.
 
 const std = @import("std");
-const Channel = std.event.Channel;
-
-pub const io_mode = .evented;
+const Io = std.Io;
+const Queue = std.Io.Queue;
 
 // Send the sequence 2, 3, 4, ... to channel 'ch'.
-fn generate(ch: *Channel(u32)) void {
+fn generate(io: Io, ch: *Queue(u32)) void {
     var i: u32 = 2;
     while (true) : (i += 1) {
-        ch.put(i);
+        ch.putOne(io, i);
     }
 }
 
 // Copy the values from channel 'in' to channel 'out',
 // removing those divisible by 'prime'.
-fn filter(in: *Channel(u32), out: *Channel(u32), prime: u32) void {
+fn filter(io: Io, in: *Queue(u32), out: *Queue(u32), prime: u32) void {
     while (true) {
-        const i = in.get();
+        const i = in.getOne(io);
         if (i % prime != 0) {
-            out.put(i);
+            out.putOne(io, i);
         }
     }
 }
 
 // The prime sieve: Daisy-chain Filter processes.
 pub fn main() anyerror!void {
-    // This techinque requires O(N) memory. It's not obvious from the Go
-    // code, but Zig has no hidden allocations.
-    // An arena allocator lets us free all the memory at once.
-    // In this case we let the operating system do the freeing, since
-    // that is most efficient.
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    const allocator = &arena.allocator;
+    var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
+    const gpa = debug_allocator.allocator();
+    //const gpa = std.heap.smp_allocator;
 
-    // Create a new channel.
-    var ch = try allocator.create(Channel(u32));
-    ch.init(&[0]u32{}); // Unbuffered channel.
+    var arena_instance = std.heap.ArenaAllocator.init(gpa);
+    const arena = arena_instance.allocator();
 
-    // Start the generate async function.
-    // In this case we let it run forever, not bothering to `await`.
-    _ = async generate(ch);
+    //var event_loop: Io.EventLoop = undefined;
+    //try event_loop.init(arena);
+    //defer event_loop.deinit();
+    //const io = event_loop.io();
 
-    var i: usize = 0;
-    while (i < 10) : (i += 1) {
-        const prime = ch.get();
-        std.debug.warn("{}\n", .{ prime });
-        const ch1 = try allocator.create(Channel(u32));
-        ch1.init(&[0]u32{});
-        (try allocator.create(@Frame(filter))).* = async filter(ch, ch1, prime);
+    var thread_pool: std.Thread.Pool = undefined;
+    try thread_pool.init(.{ .allocator = gpa });
+    defer thread_pool.deinit();
+
+    const io = thread_pool.io();
+
+    var ch = try arena.create(Queue(u32));
+    ch.* = .init(&.{}); // Unbuffered channel.
+
+    io.asyncDetached(generate, .{ io, ch });
+
+    for (0..10) |_| {
+        const prime = ch.getOne(io);
+        std.log.info("{d}", .{prime});
+        const ch1 = try arena.create(Queue(u32));
+        ch1.* = .init(&.{});
+        io.asyncDetached(filter, .{ io, ch, ch1, prime });
         ch = ch1;
     }
+    std.process.exit(0);
 }
