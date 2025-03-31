@@ -43,20 +43,19 @@ pub fn main() anyerror!void {
     var thread_pool: std.Thread.Pool = undefined;
     try thread_pool.init(.{ .allocator = gpa });
     defer thread_pool.deinit();
-
     const io = thread_pool.io();
 
     var ch = try arena.create(Queue(u32));
     ch.* = .init(&.{}); // Unbuffered channel.
 
-    io.asyncDetached(generate, .{ io, ch });
+    io.go(generate, .{ io, ch });
 
     for (0..10) |_| {
         const prime = ch.getOne(io);
         std.log.info("{d}", .{prime});
         const ch1 = try arena.create(Queue(u32));
         ch1.* = .init(&.{});
-        io.asyncDetached(filter, .{ io, ch, ch1, prime });
+        io.go(filter, .{ io, ch, ch1, prime });
         ch = ch1;
     }
     std.process.exit(0);
