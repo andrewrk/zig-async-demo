@@ -11,7 +11,7 @@ const Queue = std.Io.Queue;
 fn generate(io: Io, ch: *Queue(u32)) void {
     var i: u32 = 2;
     while (true) : (i += 1) {
-        ch.putOne(io, i);
+        ch.putOne(io, i) catch break;
     }
 }
 
@@ -19,9 +19,9 @@ fn generate(io: Io, ch: *Queue(u32)) void {
 // removing those divisible by 'prime'.
 fn filter(io: Io, in: *Queue(u32), out: *Queue(u32), prime: u32) void {
     while (true) {
-        const i = in.getOne(io);
+        const i = in.getOne(io) catch break;
         if (i % prime != 0) {
-            out.putOne(io, i);
+            out.putOne(io, i) catch break;
         }
     }
 }
@@ -35,28 +35,32 @@ pub fn main() anyerror!void {
     var arena_instance = std.heap.ArenaAllocator.init(gpa);
     const arena = arena_instance.allocator();
 
-    //var event_loop: Io.EventLoop = undefined;
-    //try event_loop.init(arena);
-    //defer event_loop.deinit();
-    //const io = event_loop.io();
+    var event_loop: Io.EventLoop = undefined;
+    try event_loop.init(arena);
+    defer event_loop.deinit();
+    const io = event_loop.io();
 
-    var thread_pool: std.Thread.Pool = undefined;
-    try thread_pool.init(.{ .allocator = gpa });
-    defer thread_pool.deinit();
-    const io = thread_pool.io();
+    //var thread_pool: std.Thread.Pool = undefined;
+    //try thread_pool.init(.{ .allocator = gpa });
+    //defer thread_pool.deinit();
+    //const io = thread_pool.io();
 
     var ch = try arena.create(Queue(u32));
     ch.* = .init(&.{}); // Unbuffered channel.
 
     io.go(generate, .{ io, ch });
 
+    var bw = std.io.bufferedWriter(std.io.getStdOut().writer());
+    const stdout = bw.writer();
+
     for (0..10) |_| {
-        const prime = ch.getOne(io);
-        std.log.info("{d}", .{prime});
+        const prime = ch.getOne(io) catch break;
+        try stdout.print("{d}\n", .{prime});
         const ch1 = try arena.create(Queue(u32));
         ch1.* = .init(&.{});
         io.go(filter, .{ io, ch, ch1, prime });
         ch = ch1;
     }
+    try bw.flush();
     std.process.exit(0);
 }
